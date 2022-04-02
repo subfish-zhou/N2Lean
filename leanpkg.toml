@@ -1,0 +1,8 @@
+[package]
+name = "N2Lean"
+version = "0.1"
+lean_version = "leanprover-community/lean:3.40.0"
+path = ""
+
+[dependencies]
+mathlib = {git = "https://github.com/leanprover-community/mathlib", rev = "1f39ada741a090840aa891551d5fb6b3f1be6633"}
