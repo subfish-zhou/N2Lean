@@ -8,3 +8,4 @@ dataset statistics
 |basic   |1  |
 |analysis|1  |
 |group_theory| 2 |
+|rat    | 3|
