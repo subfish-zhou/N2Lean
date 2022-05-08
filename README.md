@@ -8,4 +8,6 @@ dataset statistics
 |basic   |1  |
 |analysis|1  |
 |group_theory| 2 |
-|rat    | 3|
+|data/rat/basic.lean    | 72 |
+|data/rat/sqrt.lean | 3 |
+|data/rat/order.lean | 7 |
