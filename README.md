@@ -7,3 +7,4 @@ dataset statistics
 |--------|---|
 |basic   |1  |
 |analysis|1  |
+|init/int/basic.lean|3  |

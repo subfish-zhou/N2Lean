@@ -34,6 +34,7 @@ instance : has_to_string int :=
 
 namespace int
 
+/- any integer n can be identified with the natural number n -/
 protected lemma coe_nat_eq (n : ℕ) : ↑n = int.of_nat n := rfl
 
 protected def zero : ℤ := of_nat 0
@@ -42,8 +43,9 @@ protected def one  : ℤ := of_nat 1
 instance : has_zero ℤ := ⟨int.zero⟩
 instance : has_one ℤ := ⟨int.one⟩
 
+/- 0 in natural number and 0 in in integer are the same. -/
 lemma of_nat_zero : of_nat (0 : nat) = (0 : int) := rfl
-
+/- 1 in natural number and 1 in in integer are the same. -/
 lemma of_nat_one : of_nat (1 : nat) = (1 : int) := rfl
 
 /- definitions of basic functions -/
