@@ -87,7 +87,7 @@ prefix `¬`:40 := not
 
 inductive eq {α : Sort u} (a : α) : α → Prop
 | refl [] : eq a
-
+/-* \pi  *-/
 /-
 Initialize the quotient module, which effectively adds the following definitions:
 
@@ -99,7 +99,7 @@ constant quot.lift {α : Sort u} {r : α → α → Prop} {β : Sort v} (f : α 
   (∀ a b : α, r a b → eq (f a) (f b)) → quot r → β
 
 constant quot.ind {α : Sort u} {r : α → α → Prop} {β : quot r → Prop} :
-  (∀ a : α, β (quot.mk r a)) → ∀ q : quot r, β q
+  (∀ a : α, β (quot.mk r a)) → ∀ q : quot r, β q-
 
 Also the reduction rule:
 
@@ -147,8 +147,9 @@ mathlib.
 structure and (a b : Prop) : Prop :=
 intro :: (left : a) (right : b)
 
+/-* Let $a$ and $b$ be two propositions, $a \and b$ implies $a$. *-/
 lemma and.elim_left {a b : Prop} (h : and a b) : a := h.1
-
+/-* Let $a$ and $b$ be two propositions, $a \and b$ implies $b$. *-/
 lemma and.elim_right {a b : Prop} (h : and a b) : b := h.2
 
 /- eq basic support -/
@@ -161,6 +162,7 @@ attribute [refl] eq.refl
 @[pattern] def rfl {α : Sort u} {a : α} : a = a := eq.refl a
 
 @[elab_as_eliminator, subst]
+/-*  *-/
 lemma eq.subst {α : Sort u} {P : α → Prop} {a b : α} (h₁ : a = b) (h₂ : P a) : P b :=
 eq.rec h₂ h₁
 
