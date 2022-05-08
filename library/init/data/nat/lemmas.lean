@@ -11,7 +11,7 @@ namespace nat
 attribute [pre_smt] nat_zero_eq_zero
 
 /-! addition -/
-
+/-* Let $n, m$ be natural numbers, then $n + m = m + n$. *-/
 protected lemma add_comm : ∀ n m : ℕ, n + m = m + n
 | n 0     := eq.symm (nat.zero_add n)
 | n (m+1) :=
@@ -19,36 +19,46 @@ protected lemma add_comm : ∀ n m : ℕ, n + m = m + n
     eq.symm (succ_add m n) ▸ this,
   congr_arg succ (add_comm n m)
 
+/-* Let $n, m, k$ be natural numbers, then $(n + m) + k = n + (m + k)$. *-/
 protected lemma add_assoc : ∀ n m k : ℕ, (n + m) + k = n + (m + k)
 | n m 0        := rfl
 | n m (succ k) := by rw [add_succ, add_succ, add_assoc]; refl
 
+/-* Let $n, m, k$ be natural numbers, then $n + (m + k) = m + (n + k)$. *-/
 protected lemma add_left_comm : ∀ (n m k : ℕ), n + (m + k) = m + (n + k) :=
 left_comm nat.add nat.add_comm nat.add_assoc
 
+/-* Let $n, m, k$ be natural numbers, then $n + m = n + k$ implies $m = k$. *-/
 protected lemma add_left_cancel : ∀ {n m k : ℕ}, n + m = n + k → m = k
 | 0        m k := by simp [nat.zero_add] {contextual := tt}
 | (succ n) m k := λ h,
   have n+m = n+k, by { simp [succ_add] at h, assumption },
   add_left_cancel this
 
+/-* Let $n, m, k$ be natural numbers, and $n + m = k + m$, then $n = k$. *-/
 protected lemma add_right_cancel {n m k : ℕ} (h : n + m = k + m) : n = k :=
 have m + n = m + k, by rwa [nat.add_comm n m, nat.add_comm k m] at h,
 nat.add_left_cancel this
 
+/-* Let $n$ be a natrual number, then $succ n \neq 0$. *-/
 lemma succ_ne_zero (n : ℕ) : succ n ≠ 0 :=
 assume h, nat.no_confusion h
 
+/-* Let $n$ be a natural number, then the succession of $n$ does not equal to $n$. *-/
 lemma succ_ne_self : ∀ n : ℕ, succ n ≠ n
 | 0     h := absurd h (nat.succ_ne_zero 0)
 | (n+1) h := succ_ne_self n (nat.no_confusion h (λ h, h))
 
+
+/-* $1 \neq 0$ *-/
 protected lemma one_ne_zero : 1 ≠ (0 : ℕ) :=
 assume h, nat.no_confusion h
 
+/-* $0 \neq 1$ *-/
 protected lemma zero_ne_one : 0 ≠ (1 : ℕ) :=
 assume h, nat.no_confusion h
 
+/-* Let $n, m$ be natural numebrs, then $n + m = 0$ implies $n = 0$. *-/
 protected lemma eq_zero_of_add_eq_zero_right : ∀ {n m : ℕ}, n + m = 0 → n = 0
 | 0     m := by simp [nat.zero_add]
 | (n+1) m := λ h,
@@ -58,23 +68,28 @@ protected lemma eq_zero_of_add_eq_zero_right : ∀ {n m : ℕ}, n + m = 0 → n 
     apply succ_ne_zero _ h
   end
 
+/-* Let $n, m$ be natural numbers, and $n + m = 0$, then $m = 0$. *-/
 protected lemma eq_zero_of_add_eq_zero_left {n m : ℕ} (h : n + m = 0) : m = 0 :=
 @nat.eq_zero_of_add_eq_zero_right m n (nat.add_comm n m ▸ h)
 
+/-* Let $n, m, k$ be natural numbers, then $n + m + k = n + k + m$. *-/
 protected theorem add_right_comm : ∀ (n m k : ℕ), n + m + k = n + k + m :=
 right_comm nat.add nat.add_comm nat.add_assoc
 
+/-* Let $n, m$ be natural numbers, and $n + m = 0$, then $n = 0$ and $m = 0$. *-/
 theorem eq_zero_of_add_eq_zero {n m : ℕ} (H : n + m = 0) : n = 0 ∧ m = 0 :=
 ⟨nat.eq_zero_of_add_eq_zero_right H, nat.eq_zero_of_add_eq_zero_left H⟩
 
 /-! multiplication -/
-
+/-* $n * 0 = 0$ *-/
 protected lemma mul_zero (n : ℕ) : n * 0 = 0 :=
 rfl
 
+/-* Let $n, m$ be natural numbers, then $n$ times the succession of $m$ equals to $n * m + n$. *-/
 lemma mul_succ (n m : ℕ) : n * succ m = n * m + n :=
 rfl
 
+/-* $0 * n = 0$. *-/
 protected theorem zero_mul : ∀ (n : ℕ), 0 * n = 0
 | 0        := rfl
 | (succ n) := by rw [mul_succ, zero_mul]
@@ -82,6 +97,7 @@ protected theorem zero_mul : ∀ (n : ℕ), 0 * n = 0
 private meta def sort_add :=
 `[simp [nat.add_assoc, nat.add_comm, nat.add_left_comm]]
 
+/-* Let $n, m$ be natural numbers, then the succession of $n$ times $m$ equals to $(n * m) + m$. *-/
 lemma succ_mul : ∀ (n m : ℕ), (succ n) * m = (n * m) + m
 | n 0        := rfl
 | n (succ m) :=
@@ -90,32 +106,40 @@ lemma succ_mul : ∀ (n m : ℕ), (succ n) * m = (n * m) + m
     sort_add
   end
 
+/-* Let $n, m, k$ be natural numbers, then $(n + m) * k = n * k + m * k$. *-/
 protected lemma right_distrib : ∀ (n m k : ℕ), (n + m) * k = n * k + m * k
 | n m 0        := rfl
 | n m (succ k) :=
   begin simp [mul_succ, right_distrib n m k], sort_add end
 
+/-* Let $n, m, k$ be natural numbers, then $n * (m + k) = n * m + n * k$. *-/
 protected lemma left_distrib : ∀ (n m k : ℕ), n * (m + k) = n * m + n * k
 | 0        m k := by simp [nat.zero_mul]
 | (succ n) m k :=
   begin simp [succ_mul, left_distrib n m k], sort_add end
 
+/-* Let $n, m$ be natural numbers, then $n * m = m * n$. *-/
 protected lemma mul_comm : ∀ (n m : ℕ), n * m = m * n
 | n 0        := by rw [nat.zero_mul, nat.mul_zero]
 | n (succ m) := by simp [mul_succ, succ_mul, mul_comm n m]
 
+/-* Let $n, m, k$ be natural numbers, then $(n * m) * k = n * (m * k)$. *-/
 protected lemma mul_assoc : ∀ (n m k : ℕ), (n * m) * k = n * (m * k)
 | n m 0        := rfl
 | n m (succ k) := by simp [mul_succ, nat.left_distrib, mul_assoc n m k]
 
+/-* Let $n$ be a natural number, then $n * 1 = n$. *-/
 protected lemma mul_one : ∀ (n : ℕ), n * 1 = n := nat.zero_add
 
+/-* Let $n$ be a natural number, then $1 * n = n$. *-/
 protected lemma one_mul (n : ℕ) : 1 * n = n :=
 by rw [nat.mul_comm, nat.mul_one]
 
+/-* Let $n, m$ be natural numbers, then the succession of $n$ plus m equals to $n$ plus the succession of $m$. *-/
 theorem succ_add_eq_succ_add (n m : ℕ) : succ n + m = n + succ m :=
 by simp [succ_add, add_succ]
 
+/-* Let $n, m$ be natural numbers, then $n * m = 0$ implies $n = 0$ or $m = 0$. *-/
 theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 | 0        m := λ h, or.inl rfl
 | (succ n) m :=
@@ -125,40 +149,51 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
   end
 
 /-! properties of inequality -/
-
+/-* Let $n, m$ be natural numbers, and $n = m$, then $n \leq m$. *-/
 protected lemma le_of_eq {n m : ℕ} (p : n = m) : n ≤ m :=
 p ▸ less_than_or_equal.refl
 
+/-* Let $n, m$ be natural numbers, and $n \leq m$, then $n \leq succ m$. *-/
 lemma le_succ_of_le {n m : ℕ} (h : n ≤ m) : n ≤ succ m :=
 nat.le_trans h (le_succ m)
 
+/-* Let $n, m$ be natural numbers, and the succession of $n$ is lower or equal to $m$, then $n \leq m$. *-/
 lemma le_of_succ_le {n m : ℕ} (h : succ n ≤ m) : n ≤ m :=
 nat.le_trans (le_succ n) h
 
+/-* Let $n, m$ be natrual numbers, and $n < m$, then $n \leq m$. *-/
 protected lemma le_of_lt {n m : ℕ} (h : n < m) : n ≤ m :=
 le_of_succ_le h
 
+/-* Let $n, m$ be natural numbers, then $n < m$ implies $n$ is lower than the succession of $m$. *-/
 lemma lt.step {n m : ℕ} : n < m → n < succ m := less_than_or_equal.step
 
+/-* Let $n$ be a natural number, then $n = 0$ or $0 < n$. *-/
 protected lemma eq_zero_or_pos (n : ℕ) : n = 0 ∨ 0 < n :=
 by {cases n, exact or.inl rfl, exact or.inr (succ_pos _)}
 
+/-* Let $n$ be a natural number, then $n \leq 0$ implies $0 < n$. *-/
 protected lemma pos_of_ne_zero {n : nat} : n ≠ 0 → 0 < n :=
 or.resolve_left n.eq_zero_or_pos
 
+/-* Let $n, m, k$ be natural numbers and $n < m$, then $m < k$ implies $n < k$. *-/
 protected lemma lt_trans {n m k : ℕ} (h₁ : n < m) : m < k → n < k :=
 nat.le_trans (less_than_or_equal.step h₁)
 
+/-* Let $n, m, k$ be natural numbers, and $n \leq m$, then $m < k$ implies $n < k$. *-/
 protected lemma lt_of_le_of_lt {n m k : ℕ} (h₁ : n ≤ m) : m < k → n < k :=
 nat.le_trans (succ_le_succ h₁)
 
+/-* Let $n$ be a natural number, then $n$ is lower than the succession of $n$. *-/
 lemma lt.base (n : ℕ) : n < succ n := nat.le_refl (succ n)
 
 lemma lt_succ_self (n : ℕ) : n < succ n := lt.base n
 
+/-* Let $n, m$ be natural numbers, and $n \leq m$, then $m \leq n$ implies $n = m$. *-/
 protected lemma le_antisymm {n m : ℕ} (h₁ : n ≤ m) : m ≤ n → n = m :=
 less_than_or_equal.cases_on h₁ (λ a, rfl) (λ a b c, absurd (nat.lt_of_le_of_lt b c) (nat.lt_irrefl n))
 
+/-* Let $a, b$ be natural numbers, then $a < b$ or $b \leq a$. *-/
 protected lemma lt_or_ge : ∀ (a b : ℕ), a < b ∨ b ≤ a
 | a 0     := or.inr a.zero_le
 | a (b+1) :=
@@ -171,12 +206,15 @@ protected lemma lt_or_ge : ∀ (a b : ℕ), a < b ∨ b ≤ a
     end
   end
 
+/-* Let $m, n$ be natural numbers, then $m \leq n$ or $n \leq m$. *-/
 protected lemma le_total {m n : ℕ} : m ≤ n ∨ n ≤ m :=
 or.imp_left nat.le_of_lt (nat.lt_or_ge m n)
 
+/-* Let $m, n$ be natural numbers, and $m \leq n$, then $m \neq n$ implies $m < n$. *-/
 protected lemma lt_of_le_and_ne {m n : ℕ} (h1 : m ≤ n) : m ≠ n → m < n :=
 or.resolve_right (or.swap (nat.eq_or_lt_of_le h1))
 
+/-* Let $m, n$ be natural numbers, then $m < n$ if and only if $m \leq n$ and $\not n \leq m$. *-/
 protected lemma lt_iff_le_not_le {m n : ℕ} : m < n ↔ (m ≤ n ∧ ¬ n ≤ m) :=
 ⟨λ hmn, ⟨nat.le_of_lt hmn, λ hnm, nat.lt_irrefl _ (nat.lt_of_le_of_lt hnm hmn)⟩,
  λ ⟨hmn, hnm⟩, nat.lt_of_le_and_ne hmn (λ heq, hnm (heq ▸ nat.le_refl _))⟩
@@ -193,15 +231,19 @@ instance : linear_order ℕ :=
   decidable_le               := nat.decidable_le,
   decidable_eq               := nat.decidable_eq }
 
+/-* Let $n$ be non-positive natural number, then $n = 0$. *-/
 protected lemma eq_zero_of_le_zero {n : nat} (h : n ≤ 0) : n = 0 :=
 le_antisymm h n.zero_le
 
+/-* Let $a, b$ be natural numbers, then $a < b$ implies that the succession of $a$ is lower than the succession of $b$. *-/
 lemma succ_lt_succ {a b : ℕ} : a < b → succ a < succ b :=
 succ_le_succ
 
+/-* Let $a, b$ be natural unmbers, then the succession of $a$ is lower thant $b$ implies $a < b$. *-/
 lemma lt_of_succ_lt {a b : ℕ} : succ a < b → a < b :=
 le_of_succ_le
 
+/-* Let $a, b$ be natural numbers, then succ $a$ $<$ succ $b$ implies $a < b$. *-/
 lemma lt_of_succ_lt_succ {a b : ℕ} : succ a < succ b → a < b :=
 le_of_succ_le_succ
 
@@ -210,17 +252,22 @@ lemma pred_lt_pred : ∀ {n m : ℕ}, n ≠ 0 → n < m → pred n < pred m
 | n         0       h₁ h := absurd h n.not_lt_zero
 | (succ n) (succ m) _  h := lt_of_succ_lt_succ h
 
+/-* Let $a, b$ be natural numbers, and the succession of $a$ is lower or equal to $b$, then $a < b$. *-/
 lemma lt_of_succ_le {a b : ℕ} (h : succ a ≤ b) : a < b := h
 
+/-* Let $a, b$ be natural numbers and $a < b$, then then succession of $a$ is lower or equal to $b$. *-/
 lemma succ_le_of_lt {a b : ℕ} (h : a < b) : succ a ≤ b := h
 
+/-* Let $n, k$ be natural numbers, then $n \leq n + k$. *-/
 protected lemma le_add_right : ∀ (n k : ℕ), n ≤ n + k
 | n 0     := nat.le_refl n
 | n (k+1) := le_succ_of_le (le_add_right n k)
 
+/-* Let $n, m$ be natural numbers, then $n \leq m + n$. *-/
 protected lemma le_add_left (n m : ℕ): n ≤ m + n :=
 nat.add_comm n m ▸ n.le_add_right m
 
+/-* Let $n, m$ be natural numbers, then $n \leq m$ implies that there exists a natural number $k$ such that $n + k = m$. *-/
 lemma le.dest : ∀ {n m : ℕ}, n ≤ m → ∃ k, n + k = m
 | n _ less_than_or_equal.refl := ⟨0, rfl⟩
 | n _ (less_than_or_equal.step h) :=
@@ -228,17 +275,21 @@ lemma le.dest : ∀ {n m : ℕ}, n ≤ m → ∃ k, n + k = m
   | ⟨w, hw⟩ := ⟨succ w, hw ▸ add_succ n w⟩
   end
 
+/-* Let $n, m, k$ be natural numbers, and $n + k = m$, then $n \leq m$. *-/
 protected lemma le.intro {n m k : ℕ} (h : n + k = m) : n ≤ m :=
 h ▸ n.le_add_right k
 
+/-* Let $n, m, k$ be natural numbers, and $n \leq m$, then $k + n \leq k + m$. *-/
 protected lemma add_le_add_left {n m : ℕ} (h : n ≤ m) (k : ℕ) : k + n ≤ k + m :=
 match le.dest h with
 | ⟨w, hw⟩ := @le.intro _ _ w begin rw [nat.add_assoc, hw] end
 end
 
+/-* Let $n, m, k$ be natural numbers, and $n \leq m$, then $n + k \leq m + k$. *-/
 protected lemma add_le_add_right {n m : ℕ} (h : n ≤ m) (k : ℕ) : n + k ≤ m + k :=
 begin rw [nat.add_comm n k, nat.add_comm m k], apply nat.add_le_add_left h end
 
+/-* Let $k, n, m$ be natural numbers, and $k + n \leq k + m$, then $n \leq m$. *-/
 protected lemma le_of_add_le_add_left {k n m : ℕ} (h : k + n ≤ k + m) : n ≤ m :=
 match le.dest h with
 | ⟨w, hw⟩ := @le.intro _ _ w
@@ -248,46 +299,58 @@ match le.dest h with
   end
 end
 
+/-* Let $k, n, m$ be natural numbers, $n + k \leq m + k$ implies $n \leq m$. *-/
 protected lemma le_of_add_le_add_right {k n m : ℕ} : n + k ≤ m + k → n ≤ m :=
 begin
   rw [nat.add_comm _ k, nat.add_comm _ k],
   apply nat.le_of_add_le_add_left
 end
 
+/-* Let $k, n, m$ be natural numbers, then $n + k \leq m + k$ if and only if $n \leq m$. *-/
 protected lemma add_le_add_iff_le_right (k n m : ℕ) : n + k ≤ m + k ↔ n ≤ m :=
   ⟨ nat.le_of_add_le_add_right , assume h, nat.add_le_add_right h _ ⟩
 
+/-* Let $k, n, m$ be natural numbers, and $k + n < k + m$ then $n < m$. *-/
 protected theorem lt_of_add_lt_add_left {k n m : ℕ} (h : k + n < k + m) : n < m :=
 let h' := nat.le_of_lt h in
 nat.lt_of_le_and_ne
   (nat.le_of_add_le_add_left h')
   (λ heq, nat.lt_irrefl (k + m) begin rw heq at h, assumption end)
 
+/-* Let $a, b, c$ be natural numbers, and $a + b < c + b$, then $a < c$. *-/
 protected lemma lt_of_add_lt_add_right {a b c : ℕ} (h : a + b < c + b) : a < c :=
 nat.lt_of_add_lt_add_left $
 show b + a < b + c, by rwa [nat.add_comm b a, nat.add_comm b c]
 
+/-* Let $n, m, k$ be natural numbers, and $n < m$, then $k + n < k + m$. *-/
 protected lemma add_lt_add_left {n m : ℕ} (h : n < m) (k : ℕ) : k + n < k + m :=
 lt_of_succ_le (add_succ k n ▸ nat.add_le_add_left (succ_le_of_lt h) k)
 
+/-* Let $n, m, k$ be natural numbers, then $n + k < m + k$. *-/
 protected lemma add_lt_add_right {n m : ℕ} (h : n < m) (k : ℕ) : n + k < m + k :=
 nat.add_comm k m ▸ nat.add_comm k n ▸ nat.add_lt_add_left h k
 
+/-* Let $n, k$ be natural numbers and $0 < k$, then $n < n + k$. *-/
 protected lemma lt_add_of_pos_right {n k : ℕ} (h : 0 < k) : n < n + k :=
 nat.add_lt_add_left h n
 
+/-* Let $n, k$ be natural numbers and $0 < k$, then $n < k + n$. *-/
 protected lemma lt_add_of_pos_left {n k : ℕ} (h : 0 < k) : n < k + n :=
 by rw nat.add_comm; exact nat.lt_add_of_pos_right h
 
+/-* Let $a, b, c, d$ be natural numbers where $a < b$ and $c < d$, then $a + c < b + d$. *-/
 protected lemma add_lt_add {a b c d : ℕ} (h₁ : a < b) (h₂ : c < d) : a + c < b + d :=
 lt_trans (nat.add_lt_add_right h₁ c) (nat.add_lt_add_left h₂ b)
 
+/-* Let $a, b, c, d$ be natural numbers where $a \leq b$ and $c \leq d$, then $a + c \leq b + d$. *-/
 protected lemma add_le_add {a b c d : ℕ} (h₁ : a ≤ b) (h₂ : c ≤ d) : a + c ≤ b + d :=
 le_trans (nat.add_le_add_right h₁ c) (nat.add_le_add_left h₂ b)
 
+/-* $0 < 1$. *-/
 protected lemma zero_lt_one : 0 < (1:nat) :=
 zero_lt_succ 0
 
+/-* Let $n, m, k$ be natural numbers, and $n \leq m$, then $k * n \leq k * m$. *-/
 protected lemma mul_le_mul_left {n m : ℕ} (k : ℕ) (h : n ≤ m) : k * n ≤ k * m :=
 match le.dest h with
 | ⟨l, hl⟩ :=
@@ -295,29 +358,36 @@ match le.dest h with
   le.intro this
 end
 
+/-* Let $n, m, k$ be natural numbers, and $n \leq m$, then $n * k \leq m * k$. *-/
 protected lemma mul_le_mul_right {n m : ℕ} (k : ℕ) (h : n ≤ m) : n * k ≤ m * k :=
 nat.mul_comm k m ▸ nat.mul_comm k n ▸ k.mul_le_mul_left h
 
+/-* Let $n, m, k$ be natural numbers, where $n < m$ and $0 < k$, then $k * n < k * m$. *-/
 protected lemma mul_lt_mul_of_pos_left {n m k : ℕ} (h : n < m) (hk : 0 < k) : k * n < k * m :=
 nat.lt_of_lt_of_le (nat.lt_add_of_pos_right hk)
   (mul_succ k n ▸ nat.mul_le_mul_left k (succ_le_of_lt h))
 
+/-* Let $n, m, k$ be natural numbers, where $n < m$ and $0 < k$, then $n * k < m * k$. *-/
 protected lemma mul_lt_mul_of_pos_right {n m k : ℕ} (h : n < m) (hk : 0 < k) : n * k < m * k :=
 nat.mul_comm k m ▸ nat.mul_comm k n ▸ nat.mul_lt_mul_of_pos_left h hk
 
+/-* Let $a, b, c$ be natural numbers, where $c * a \leq c * b$ and $0 < c$, then $a \leq b$. *-/
 protected lemma le_of_mul_le_mul_left {a b c : ℕ} (h : c * a ≤ c * b) (hc : 0 < c) : a ≤ b :=
 not_lt.1
   (assume h1 : b < a,
    have h2 : c * b < c * a, from nat.mul_lt_mul_of_pos_left h1 hc,
    not_le_of_gt h2 h)
 
+/-* Let $m, n$ be natural numbers, then $m$ is lower than the succession of $n$ implies $m < n$. *-/
 lemma le_of_lt_succ {m n : nat} : m < succ n → m ≤ n :=
 le_of_succ_le_succ
 
+/-* Let $m, k, n$ be natural numbers where $0 < n$ and $n * m = n * k$, then $m = k$. *-/
 protected theorem eq_of_mul_eq_mul_left {m k n : ℕ} (Hn : 0 < n) (H : n * m = n * k) : m = k :=
 le_antisymm (nat.le_of_mul_le_mul_left (le_of_eq H) Hn)
             (nat.le_of_mul_le_mul_left (le_of_eq H.symm) Hn)
 
+/-* Let $a, b$ be positive natural numbers, then $0 < a * b$. *-/
 protected lemma mul_pos {a b : ℕ} (ha : 0 < a) (hb : 0 < b) : 0 < a * b :=
 have h : 0 * b < a * b, from nat.mul_lt_mul_of_pos_right ha hb,
 by rwa nat.zero_mul at h
@@ -342,9 +412,11 @@ protected def lt_by_cases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : 
 nat.lt_ge_by_cases h₁ (λ h₁,
   nat.lt_ge_by_cases h₃ (λ h, h₂ (nat.le_antisymm h h₁)))
 
+/-* Let $a, b$ be natural numbers, then $a < b$ or $a = b$ or $b < a$. *-/
 protected theorem lt_trichotomy (a b : ℕ) : a < b ∨ a = b ∨ b < a :=
 nat.lt_by_cases (λ h, or.inl h) (λ h, or.inr (or.inl h)) (λ h, or.inr (or.inr h))
 
+/-* Let $a, b$ be natural numbers and $\not a < b$, then $a = b$ or $b < a$. *-/
 protected theorem eq_or_lt_of_not_lt {a b : ℕ} (hnlt : ¬ a < b) : a = b ∨ b < a :=
 (nat.lt_trichotomy a b).resolve_left hnlt
 
@@ -352,7 +424,7 @@ theorem lt_succ_of_lt {a b : nat} (h : a < b) : a < succ b := le_succ_of_le h
 
 lemma one_pos : 0 < 1 := nat.zero_lt_one
 
-
+/-* Let $a, b, c$ be natural numbers where $a \leq b$, then $c * a \leq c * b$. *-/
 protected lemma mul_le_mul_of_nonneg_left {a b c : ℕ} (h₁ : a ≤ b) : c * a ≤ c * b :=
 begin
   by_cases hba : b ≤ a, { simp [le_antisymm hba h₁] },
@@ -361,6 +433,7 @@ begin
     (nat.mul_lt_mul_of_pos_left (lt_of_le_not_le h₁ hba) (lt_of_le_not_le c.zero_le hc0))).left,
 end
 
+/-* Let $a, b, c$ be natural numbers where $a \leq b$, then $a * c \leq b * c$. *-/
 protected lemma mul_le_mul_of_nonneg_right {a b c : ℕ} (h₁ : a ≤ b) : a * c ≤ b * c :=
 begin
   by_cases hba : b ≤ a, { simp [le_antisymm hba h₁] },
@@ -369,12 +442,14 @@ begin
     (nat.mul_lt_mul_of_pos_right (lt_of_le_not_le h₁ hba) (lt_of_le_not_le c.zero_le hc0))).left,
 end
 
+/-* Let $a, b, c, d$ be natural numbers where $a < c$, $b \leq d$ and $0 < b$, then $a * b < c * d$. *-/
 protected lemma mul_lt_mul {a b c d : ℕ} (hac : a < c) (hbd : b ≤ d) (pos_b : 0 < b) :
   a * b < c * d :=
 calc
   a * b < c * b : nat.mul_lt_mul_of_pos_right hac pos_b
     ... ≤ c * d : nat.mul_le_mul_of_nonneg_left hbd
 
+/-* Let $a, b, c, d$ be natural numbers where $a \leq c$, $b < d$ and $0 < c$, then $a * b < c * d$. *-/
 protected lemma mul_lt_mul' {a b c d : ℕ} (h1 : a ≤ c) (h2 : b < d) (h3 : 0 < c) :
        a * b < c * d :=
 calc
@@ -382,6 +457,7 @@ calc
      ... < c * d : nat.mul_lt_mul_of_pos_left h2 h3
 
 -- TODO: there are four variations, depending on which variables we assume to be nonneg
+/-* Let $a, b, c, d$ be natural numbers where $a \leq c$ and $b \leq d$, then $a * b \leq c * d$. *-/
 protected lemma mul_le_mul {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) : a * b ≤ c * d :=
 calc
   a * b ≤ c * b : nat.mul_le_mul_of_nonneg_right hac
@@ -406,6 +482,7 @@ protected lemma bit0_ne_one : ∀ n : ℕ, bit0 n ≠ 1
   nat.no_confusion h1
     (λ h2, absurd h2 (succ_ne_zero (n + n)))
 
+/-* Let $n$ be a natural number, then $n + n \neq 1$. *-/
 protected lemma add_self_ne_one : ∀ (n : ℕ), n + n ≠ 1
 | 0     h := nat.no_confusion h
 | (n+1) h :=
@@ -519,17 +596,20 @@ rfl
 lemma pred_succ (n : ℕ) : pred (succ n) = n :=
 rfl
 
+/-* Let $n$ be natural, then $n + 1 \leq 0$. *-/
 theorem add_one_ne_zero (n : ℕ) : n + 1 ≠ 0 := succ_ne_zero _
 
 theorem eq_zero_or_eq_succ_pred (n : ℕ) : n = 0 ∨ n = succ (pred n) :=
 by cases n; simp
 
+/-* Let $n$ be a non-zero natural number, then there exists a natural number $k$ such hat $n$ is the succession of $k$. *-/
 theorem exists_eq_succ_of_ne_zero {n : ℕ} (H : n ≠ 0) : ∃k : ℕ, n = succ k :=
 ⟨_, (eq_zero_or_eq_succ_pred _).resolve_left H⟩
 
 def discriminate {B : Sort u} {n : ℕ} (H1: n = 0 → B) (H2 : ∀m, n = succ m → B) : B :=
 by induction h : n; [exact H1 h, exact H2 _ h]
 
+/-* 1 is the succession of 0. *-/
 theorem one_succ_zero : 1 = succ 0 := rfl
 
 theorem pred_inj : ∀ {a b : nat}, 0 < a → 0 < b → nat.pred a = nat.pred b → a = b
@@ -553,6 +633,7 @@ protected theorem sub_le_sub_right {n m : ℕ} (h : n ≤ m) : ∀ k, n - k ≤ 
 | 0        := h
 | (succ z) := pred_le_pred (sub_le_sub_right z)
 
+/-* $n - 0 = n$. *-/
 @[simp]
 protected theorem sub_zero (n : ℕ) : n - 0 = n :=
 rfl
@@ -569,30 +650,36 @@ protected theorem sub_self : ∀ (n : ℕ), n - n = 0
 
 /- TODO(Leo): remove the following ematch annotations as soon as we have
    arithmetic theory in the smt_stactic -/
+/-* Let $n, k, m$ be natural numbers, then $(n + k) - (m + k) = n - m$. *-/
 @[ematch_lhs]
 protected theorem add_sub_add_right : ∀ (n k m : ℕ), (n + k) - (m + k) = n - m
 | n 0        m := by rw [nat.add_zero, nat.add_zero]
 | n (succ k) m := by rw [add_succ, add_succ, succ_sub_succ, add_sub_add_right n k m]
 
+/-* Let $k, n, m$ be natural numbers, then $(k + n) - (k + m) = n - m$. *-/
 @[ematch_lhs]
 protected theorem add_sub_add_left (k n m : ℕ) : (k + n) - (k + m) = n - m :=
 by rw [nat.add_comm k n, nat.add_comm k m, nat.add_sub_add_right]
 
+/-* Let $n, m$ be natural, then $n + m - m = n$. *-/
 @[ematch_lhs]
 protected theorem add_sub_cancel (n m : ℕ) : n + m - m = n :=
 suffices n + m - (0 + m) = n, from
   by rwa [nat.zero_add] at this,
 by rw [nat.add_sub_add_right, nat.sub_zero]
 
+/-* Let $n, m$ be natural, then $n + m - n = m$. *-/
 @[ematch_lhs]
 protected theorem add_sub_cancel_left (n m : ℕ) : n + m - n = m :=
 show n + m - (n + 0) = m, from
 by rw [nat.add_sub_add_left, nat.sub_zero]
 
+/-* Let $n, m, k$ be natural numbers, then $n - m - k = n - (m + k)$. *-/
 protected theorem sub_sub : ∀ (n m k : ℕ), n - m - k = n - (m + k)
 | n m 0        := by rw [nat.add_zero, nat.sub_zero]
 | n m (succ k) := by rw [add_succ, nat.sub_succ, nat.sub_succ, sub_sub n m k]
 
+/-* Let $n, m, k$ be natural numbers where $k \leq m$ and $n - k \leq m - k$ then $n \leq m$. *-/
 protected theorem le_of_le_of_sub_le_sub_right {n m k : ℕ}
   (h₀ : k ≤ m)
   (h₁ : n - k ≤ m - k)
@@ -611,20 +698,24 @@ begin
       apply le_of_succ_le_succ h₀ }, }
 end
 
+/-* Let $n, m, k$ be natural numbers and $k \leq m$, then $n - k \leq m - k$ if and only if $n \leq m$. *-/
 protected theorem sub_le_sub_right_iff (n m k : ℕ)
   (h : k ≤ m)
 : n - k ≤ m - k ↔ n ≤ m :=
 ⟨ nat.le_of_le_of_sub_le_sub_right h , assume h, nat.sub_le_sub_right h k ⟩
 
+/-* Let $n, m$ be natural numbers, then $n - (n + m) = 0$. *-/
 protected theorem sub_self_add (n m : ℕ) : n - (n + m) = 0 :=
 show (n + 0) - (n + m) = 0, from
 by rw [nat.add_sub_add_left, nat.zero_sub]
 
+/-* Let $n, y, k$ be natural numbers, and $k \leq y$, then $x + k \leq y$ if and only if $x \leq y - k$. *-/
 protected theorem add_le_to_le_sub (x : ℕ) {y k : ℕ}
   (h : k ≤ y)
 : x + k ≤ y ↔ x ≤ y - k :=
 by rw [← nat.add_sub_cancel x k, nat.sub_le_sub_right_iff _ _ _ h, nat.add_sub_cancel]
 
+/-* Let $a, b$ be natural numbers satisfying $0 < a \leq b$, then $b - a < b$. *-/
 protected lemma sub_lt_of_pos_le (a b : ℕ) (h₀ : 0 < a) (h₁ : a ≤ b)
 : b - a < b :=
 begin
@@ -642,19 +733,23 @@ theorem succ_pred_eq_of_pos : ∀ {n : ℕ}, 0 < n → succ (pred n) = n
 | 0 h        := absurd h (lt_irrefl 0)
 | (succ k) h := rfl
 
+/-* Let $n, m$ be natural numbers where $n \leq m$, then $n - m = 0$. *-/
 protected theorem sub_eq_zero_of_le {n m : ℕ} (h : n ≤ m) : n - m = 0 :=
 exists.elim (nat.le.dest h)
   (assume k, assume hk : n + k = m, by rw [← hk, nat.sub_self_add])
 
+/-* Let $n, m$ be natural numbers where $n - m = 0$, then $n \leq m$. *-/
 protected theorem le_of_sub_eq_zero : ∀{n m : ℕ}, n - m = 0 → n ≤ m
 | n 0 H := begin rw [nat.sub_zero] at H, simp [H] end
 | 0 (m+1) H := (m + 1).zero_le
 | (n+1) (m+1) H := nat.add_le_add_right
   (le_of_sub_eq_zero begin simp [nat.add_sub_add_right] at H, exact H end) _
 
+/-* Let $n, m$ be natural numbers, then $n - m = 0$ if and only if $n \leq m$. *-/
 protected theorem sub_eq_zero_iff_le {n m : ℕ} : n - m = 0 ↔ n ≤ m :=
 ⟨nat.le_of_sub_eq_zero, nat.sub_eq_zero_of_le⟩
 
+/-* Let $n, m$ be natural numbers where $n \leq m$, then $n + (m - n) = m$. *-/
 protected theorem add_sub_of_le {n m : ℕ} (h : n ≤ m) : n + (m - n) = m :=
 exists.elim (nat.le.dest h)
   (assume k, assume hk : n + k = m,
