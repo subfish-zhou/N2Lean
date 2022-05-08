@@ -7,6 +7,7 @@ dataset statistics
 |--------|---|
 |basic   |1  |
 |analysis|1  |
+|algebra/classes|20  |
 |group_theory| 2 |
 |data/rat/basic.lean    | 72 |
 |data/rat/sqrt.lean | 3 |
