@@ -75,11 +75,14 @@ instance is_symm_op_of_is_commutative (α : Type u) (op : α → α → α) [is_
 @[algebra] class is_distinct (α : Type u) (a : α) (b : α) : Prop :=
 (distinct : a ≠ b)
 
-/-
+/-*Let $\alpha \in u$, $\beta \in v$, $f$ and $g$ be maps,  $f$ map $\alpha \to \beta$ ,
+$g$ map $\alpha \to \beta$, which can implies $\forall \alpha$, $g(f(\alpha))$ $=$ $\alpha$. *-/
+
 -- The following type class doesn't seem very useful, a regular simp lemma should work for this.
 class is_inv (α : Type u) (β : Type v) (f : α → β) (g : out β → α) : Prop :=
 (inv : ∀ a, g (f a) = a)
 
+/-*Let $\alpha \in u$, $f$ be map, $f$ map $\alpha \to \alpha$, which can implies $\forall \alpha$, $g(f(\alpha))$ $=$ $\alpha$.  *-/
 -- The following one can also be handled using a regular simp lemma
 class is_idempotent (α : Type u) (f : α → α) : Prop :=
 (idempotent : ∀ a, f (f a) = f a)
@@ -168,28 +171,29 @@ instance eq_is_equiv (α : Type u) : is_equiv α (=) :=
 section
 variables {α : Type u} {r : α → α → Prop}
 local infix `≺`:50 := r
-
+/-*Let $a$ $/subset$ $/alpha$, implies $\nega$ $\prec$ $a$. *-/
 lemma irrefl [is_irrefl α r] (a : α) : ¬ a ≺ a :=
 is_irrefl.irrefl a
-
+/-*Let $a$ $/subset$ $/alpha$, implies $a$ $\prec$ $a$. *-/
 lemma refl [is_refl α r] (a : α) : a ≺ a :=
 is_refl.refl a
-
+/-*Let $a$, $b$ and $c$ $/subset$ $/alpha$, $a$ $\prec$ $b$ and $b$ $\prec$ $c$,which implies $a$ $\prec$ $c$. *-/
 lemma trans [is_trans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
 is_trans.trans _ _ _
-
+/-*Let $a$, $b$ $/subset$ $/alpha$ and $a$ $\prec$ $b$, implies $b$ $\prec$ $a$. *-/
 lemma symm [is_symm α r] {a b : α} : a ≺ b → b ≺ a :=
 is_symm.symm _ _
-
+/-*Let $a$,$b$ $/subset$ $/alpha$, $a$ $\prec$ $b$ and $b$ $\prec$ $a$, implies $a$ $=$ $b$. *-/
 lemma antisymm [is_antisymm α r] {a b : α} : a ≺ b → b ≺ a → a = b :=
 is_antisymm.antisymm _ _
-
+/-*Let $a$,$b$ $/subset$ $/alpha$ and $a$ $\prec$ $b$, implies $\negb$ $\prec$ $a$. *-/
 lemma asymm [is_asymm α r] {a b : α} : a ≺ b → ¬ b ≺ a :=
 is_asymm.asymm _ _
-
+/-*Let $\forall$ $a$,$b$ $\in$ $\alpha$,$a$ $\prec$ $b$ $\vee$ $a$ $=$ $b$ $\vee$ $b$ $\prec$ $a$. *-/
 lemma trichotomous [is_trichotomous α r] : ∀ (a b : α), a ≺ b ∨ a = b ∨ b ≺ a :=
 is_trichotomous.trichotomous
-
+/-*Let $a$, $b$ and $c$ $/subset$ $/alpha$,$\nega$ $\vee$ $b$ $\wedge$ $\negb$ $\vee$ $a$ and 
+$\negb$ $\vee$ $c$ $\wedge$ $\negc$ $\vee$ $b$, implies $\nega$ $\vee$ $c$ $\wedge$ $\negc$ $\vee$ $a$ *-/
 lemma incomp_trans [is_incomp_trans α r] {a b c : α} : (¬ a ≺ b ∧ ¬ b ≺ a) → (¬ b ≺ c ∧ ¬ c ≺ b) → (¬ a ≺ c ∧ ¬ c ≺ a) :=
 is_incomp_trans.incomp_trans _ _ _
 
@@ -240,19 +244,19 @@ def equiv (a b : α) : Prop :=
 parameter [is_strict_weak_order α r]
 
 local infix ` ≈ `:50 := equiv
-
+/-*$a$ is eauivalent to $a$. *-/
 lemma erefl (a : α) : a ≈ a :=
 ⟨irrefl a, irrefl a⟩
-
+/-*$a$ is eauivalent to $b$ implies $b$ is eauivalent to $a$. *-/
 lemma esymm {a b : α} : a ≈ b → b ≈ a :=
 λ ⟨h₁, h₂⟩, ⟨h₂, h₁⟩
-
+/-*$a$ is eauivalent to $b$ and $b$ is eauivalent to $c$ implies $a$ is eauivalent to $c$. *-/
 lemma etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
 incomp_trans
-
+/-*$a$ is eauivalent to $b$ implies $\nega$ $\vee$ $b$. *-/
 lemma not_lt_of_equiv {a b : α} : a ≈ b → ¬ a ≺ b :=
 λ h, h.1
-
+/-*$a$ is eauivalent to $b$ implies  $\negb$ $\vee$ $a$. *-/
 lemma not_lt_of_equiv' {a b : α} : a ≈ b → ¬ b ≺ a :=
 λ h, h.2
 
@@ -263,7 +267,7 @@ end
 /- Notation for the equivalence relation induced by lt -/
 notation a ` ≈[`:50 lt `]` b:50 := @equiv _ lt a b
 end strict_weak_order
-
+/-**-/
 lemma is_strict_weak_order_of_is_total_preorder {α : Type u} {le : α → α → Prop} {lt : α → α → Prop} [decidable_rel le] [s : is_total_preorder α le]
                                                 (h : ∀ a b, lt a b ↔ ¬ le b a) : is_strict_weak_order α lt :=
 {
@@ -290,7 +294,8 @@ lemma is_strict_weak_order_of_is_total_preorder {α : Type u} {le : α → α �
       (λ n, absurd hca (iff.mp (h _ _) n))
       (λ n, absurd hac (iff.mp (h _ _) n))
 }
-
+/-*$\forall$ $a$,$b$ and $c$ $\in$ $\alpha$, $a$ lt $b$ can imply $\neg$ ($b$ lt $c$）$\wedge$ $\neg$ ($c$ lt $b$）,
+which implies $a$ lt $b$. *-/
 lemma lt_of_lt_of_incomp {α : Type u} {lt : α → α → Prop} [is_strict_weak_order α lt] [decidable_rel lt]
                          : ∀ {a b c}, lt a b → (¬ lt b c ∧ ¬ lt c b) → lt a c :=
 λ a b c hab ⟨nbc, ncb⟩,
@@ -299,7 +304,8 @@ lemma lt_of_lt_of_incomp {α : Type u} {lt : α → α → Prop} [is_strict_weak
     λ nac : ¬ lt a c,
       have ¬ lt a b ∧ ¬ lt b a, from incomp_trans_of lt ⟨nac, nca⟩ ⟨ncb, nbc⟩,
       absurd hab this.1
-
+/-*$\forall$ $a$,$b$ and $c$ $\in$ $\alpha$, $\neg$ ($a$ lt $b$）$\wedge$ $\neg$ ($b$ lt $a$） can imply $b$ lt $c$,
+which implies $a$ lt $c$. *-/
 lemma lt_of_incomp_of_lt {α : Type u} {lt : α → α → Prop} [is_strict_weak_order α lt] [decidable_rel lt]
                          : ∀ {a b c}, (¬ lt a b ∧ ¬ lt b a) → lt b c → lt a c :=
 λ a b c ⟨nab, nba⟩ hbc,
@@ -308,7 +314,7 @@ lemma lt_of_incomp_of_lt {α : Type u} {lt : α → α → Prop} [is_strict_weak
     λ nac : ¬ lt a c,
       have ¬ lt b c ∧ ¬ lt c b, from incomp_trans_of lt ⟨nba, nab⟩ ⟨nac, nca⟩,
       absurd hbc this.1
-
+/-*$\neg$ ($a$ lt $b$）$\wedge$ $\neg$ ($b$ lt $a$） implies $a$ $=$ $b$. *-/
 lemma eq_of_incomp {α : Type u} {lt : α → α → Prop} [is_trichotomous α lt] {a b} : (¬ lt a b ∧ ¬ lt b a) → a = b :=
 λ ⟨nab, nba⟩,
   match trichotomous_of lt a b with
@@ -316,15 +322,15 @@ lemma eq_of_incomp {α : Type u} {lt : α → α → Prop} [is_trichotomous α l
   | or.inr (or.inl hab) := hab
   | or.inr (or.inr hba) := absurd hba nba
   end
-
+/-*$a$ is eauivalent to ($b$ lt $b$）implies $a$ $=$ $b$. *-/
 lemma eq_of_eqv_lt {α : Type u} {lt : α → α → Prop} [is_trichotomous α lt] {a b} : a ≈[lt] b → a = b :=
 eq_of_incomp
-
+/-*$\neg$ ($a$ lt $b$）$\wedge$ $\neg$ ($b$ lt $a$）is eauivalent to $a$ $=$ $b$. *-/
 lemma incomp_iff_eq {α : Type u} {lt : α → α → Prop} [is_trichotomous α lt] [is_irrefl α lt] (a b) : (¬ lt a b ∧ ¬ lt b a) ↔ a = b :=
 iff.intro eq_of_incomp (λ hab, eq.subst hab (and.intro (irrefl_of lt a) (irrefl_of lt a)))
-
+/-*$a$ is eauivalent to ($b$ lt $b$）is eauivalent to $a$ $=$ $b$. *-/
 lemma eqv_lt_iff_eq {α : Type u} {lt : α → α → Prop} [is_trichotomous α lt] [is_irrefl α lt] (a b) : a ≈[lt] b ↔ a = b :=
 incomp_iff_eq a b
-
+/-*$a$ lt $b$ implies $\neg$($b$ lt $a$). *-/
 lemma not_lt_of_lt {α : Type u} {lt : α → α → Prop} [is_strict_order α lt] {a b} : lt a b → ¬ lt b a :=
 λ h₁ h₂, absurd (trans_of lt h₁ h₂) (irrefl_of lt _)
