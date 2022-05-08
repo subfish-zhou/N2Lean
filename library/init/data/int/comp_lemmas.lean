@@ -13,9 +13,11 @@ namespace int
 
 /- 1. Lemmas for reducing the problem to the case where the numerals are positive -/
 
+/-* for integers a and b, if a is not equal to b, then negative a is not equal to negative b *-/
 protected lemma ne_neg_of_ne {a b : ℤ} : a ≠ b → -a ≠ -b :=
 λ h₁ h₂, absurd (int.neg_inj h₂) h₁
 
+/-* for integer a, if a is not 0, so is negative a  *-/
 protected lemma neg_ne_zero_of_ne {a : ℤ} : a ≠ 0 → -a ≠ 0 :=
 λ h₁ h₂,
   have -a = -0, by rwa int.neg_zero,
@@ -25,6 +27,7 @@ protected lemma neg_ne_zero_of_ne {a : ℤ} : a ≠ 0 → -a ≠ 0 :=
 protected lemma zero_ne_neg_of_ne {a : ℤ} (h : 0 ≠ a) : 0 ≠ -a :=
 ne.symm (int.neg_ne_zero_of_ne (ne.symm h))
 
+/-* for integers a and b, if 0 < a and 0 < b, then -a is not equal to b  *-/
 protected lemma neg_ne_of_pos {a b : ℤ} : 0 < a → 0 < b → -a ≠ b :=
 λ h₁ h₂ h,
 begin
