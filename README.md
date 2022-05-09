@@ -13,3 +13,6 @@ dataset statistics
 |data/rat/basic.lean    | 72 |
 |data/rat/sqrt.lean | 3 |
 |data/rat/order.lean | 7 |
+|init/data/nat/basic.lean | 17 |
+|init/data/nat/gcd.lean | 7 |
+|init/data/nat/lemmas.lean | 98 |
