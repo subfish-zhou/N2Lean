@@ -26,26 +26,26 @@ int.cases_on a (assume a, decidable.true) (assume a, decidable.false)
 instance decidable_le (a b : ℤ) : decidable (a ≤ b) := decidable_nonneg _
 
 instance decidable_lt (a b : ℤ) : decidable (a < b) := decidable_nonneg _
-
+/-* for integers $a$ and $b$, $a < b$ if and only if $a + 1≤ b$ *-/
 lemma lt_iff_add_one_le (a b : ℤ) : a < b ↔ a + 1 ≤ b := iff.refl _
-
+/-* for any integer $a$, if $a$ is nonnegative, then there is a natural number $n$ such that $a = n$*-/
 lemma nonneg.elim {a : ℤ} : nonneg a → ∃ n : ℕ, a = n :=
 int.cases_on a (assume n H, exists.intro n rfl) (assume n', false.elim)
-
+/-* for any integer $a$, either $a$ or $-a$ is nonnegative *-/
 lemma nonneg_or_nonneg_neg (a : ℤ) : nonneg a ∨ nonneg (-a) :=
 int.cases_on a (assume n, or.inl trivial) (assume n, or.inr trivial)
-
+/-* for any integers $a$, $b$ and any natural number $n$, if $b - a = n$, then $a ≤ b$ *-/
 lemma le.intro_sub {a b : ℤ} {n : ℕ} (h : b - a = n) : a ≤ b :=
 show nonneg (b - a), by rw h; trivial
 
 local attribute [simp] int.sub_eq_add_neg int.add_assoc int.add_right_neg int.add_left_neg
   int.zero_add int.add_zero int.neg_add int.neg_neg int.neg_zero
-
+/-* for any integers $a$, $b$ and natural number $n$, if $a + n = b$, then $a ≤ b$ *-/
 lemma le.intro {a b : ℤ} {n : ℕ} (h : a + n = b) : a ≤ b :=
 le.intro_sub (by rw [← h, int.add_comm]; simp)
-
+/-* for integers $a$ and $b$, if $a ≤ b$,then there exists a natural number $n$, such that $b - a = n$ *-/
 lemma le.dest_sub {a b : ℤ} (h : a ≤ b) : ∃ n : ℕ, b - a = n := nonneg.elim h
-
+/-* for integers $a$ and $b$, if $a ≤ b$,then there exists a natural number $n$, such that $a + n = b$ *-/
 lemma le.dest {a b : ℤ} (h : a ≤ b) : ∃ n : ℕ, a + n = b :=
 match (le.dest_sub h) with
 | ⟨n, h₁⟩ := exists.intro n begin rw [← h₁, int.add_comm], simp end
@@ -53,14 +53,14 @@ end
 
 lemma le.elim {a b : ℤ} (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n = b → P) : P :=
 exists.elim (le.dest h) h'
-
+/-* for integers $a$ and $b$, either $a ≤ b$, or $b ≤ a$ *-/
 protected lemma le_total (a b : ℤ) : a ≤ b ∨ b ≤ a :=
 or.imp_right
   (assume H : nonneg (-(b - a)),
    have -(b - a) = a - b, by simp [int.add_comm],
    show nonneg (a - b), from this ▸ H)
   (nonneg_or_nonneg_neg (b - a))
-
+/-* for natural numbers $m$ and $n$, if $m ≤ n$ holds in ℕ , then $m ≤ n$ holds in ℤ *-/
 lemma coe_nat_le_coe_nat_of_le {m n : ℕ} (h : m ≤ n) : (↑m : ℤ) ≤ ↑n :=
 match nat.le.dest h with
 | ⟨k, (hk : m + k = n)⟩ := le.intro (begin rw [← hk], reflexivity end)
@@ -79,18 +79,18 @@ coe_nat_le_coe_nat_of_le n.zero_le
 
 lemma eq_coe_of_zero_le {a : ℤ} (h : 0 ≤ a) : ∃ n : ℕ, a = n :=
 by { have t := le.dest_sub h, simp at t, exact t }
-
+/-* for any integer $a$ with $0 < a$, there exists a natural number $n$ such that $a$ is the successor of $n$ *-/
 lemma eq_succ_of_zero_lt {a : ℤ} (h : 0 < a) : ∃ n : ℕ, a = n.succ :=
 let ⟨n, (h : ↑(1+n) = a)⟩ := le.dest h in
 ⟨n, by rw nat.add_comm at h; exact h.symm⟩
-
+/-* for any integer $a$ and any natural number $n$, $a$ is less than $a$ plus the successor of $n$  *-/
 lemma lt_add_succ (a : ℤ) (n : ℕ) : a < a + ↑(nat.succ n) :=
 le.intro (show a + 1 + n = a + nat.succ n,
   by { simp [int.coe_nat_eq, int.add_comm, int.add_left_comm], reflexivity })
-
+/-* for any integers $a$, $b$ and any natural number $n$, if $a$ plus the successor of $n$ equals $b$, then $a < b$   *-/
 lemma lt.intro {a b : ℤ} {n : ℕ} (h : a + nat.succ n = b) : a < b :=
 h ▸ lt_add_succ a n
-
+/-* for integers $a$, $b$ with $a < b$, there exists a natural number $n$ such that sum of $a$ and the successor of $n$ is $b$ *-/
 lemma lt.dest {a b : ℤ} (h : a < b) : ∃ n : ℕ, a + ↑(nat.succ n) = b :=
 le.elim h (assume n, assume hn : a + 1 + n = b,
     exists.intro n begin rw [← hn, int.add_assoc, int.add_comm 1], reflexivity end)

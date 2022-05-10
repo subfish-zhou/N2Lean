@@ -34,7 +34,7 @@ instance : has_to_string int :=
 
 namespace int
 
-/- a natural number is also an integer -/
+/-* a natural number is also an integer *-/
 protected lemma coe_nat_eq (n : ℕ) : ↑n = int.of_nat n := rfl
 
 protected def zero : ℤ := of_nat 0
@@ -43,9 +43,9 @@ protected def one  : ℤ := of_nat 1
 instance : has_zero ℤ := ⟨int.zero⟩
 instance : has_one ℤ := ⟨int.one⟩
 
-/- 0 in natural number and 0 in in integer are the same. -/
+/-* 0 in natural number and 0 in in integer are the same. *-/
 lemma of_nat_zero : of_nat (0 : nat) = (0 : int) := rfl
-/- 1 in natural number and 1 in in integer are the same. -/
+/-* 1 in natural number and 1 in in integer are the same. *-/
 lemma of_nat_one : of_nat (1 : nat) = (1 : int) := rfl
 
 /- definitions of basic functions -/
@@ -64,7 +64,7 @@ lemma sub_nat_nat_of_sub_eq_zero {m n : ℕ} (h : n - m = 0) :
   sub_nat_nat m n = of_nat (m - n) :=
 begin unfold sub_nat_nat, rw h, unfold sub_nat_nat._match_1 end
 
-/- for natural number m,n,k, if n-m is the successor of k,then m-n is the negative of k+1  -/
+/-* for natural number m,n,k, if n-m is the successor of k,then m-n is the negative of k+1  *-/
 lemma sub_nat_nat_of_sub_eq_succ {m n k : ℕ} (h : n - m = succ k) :
   sub_nat_nat m n = -[1+ k] :=
 begin unfold sub_nat_nat, rw h, unfold sub_nat_nat._match_1 end
@@ -95,14 +95,14 @@ protected def sub : ℤ → ℤ → ℤ :=
 
 instance : has_sub ℤ := ⟨int.sub⟩
 
-/- When viewed 0 as an integer, negative 0 is 0  -/
+/-* When viewed 0 as an integer, negative 0 is 0  *-/
 protected lemma neg_zero : -(0:ℤ) = 0 := rfl
 
-/- addition of natural numbers is the same as addition of integers -/
+/-* addition of natural numbers is the same as addition of integers *-/
 lemma of_nat_add (n m : ℕ) : of_nat (n + m) = of_nat n + of_nat m := rfl
-/- multiplication of natural numbers is the same as multiplication of integers -/
+/-* multiplication of natural numbers is the same as multiplication of integers *-/
 lemma of_nat_mul (n m : ℕ) : of_nat (n * m) = of_nat n * of_nat m := rfl
-/- the successor of a natural number is the same as its successor as an integer -/
+/-* the successor of a natural number is the same as its successor as an integer *-/
 lemma of_nat_succ (n : ℕ) : of_nat (succ n) = of_nat n + 1 := rfl
 
 lemma neg_of_nat_zero : -(of_nat 0) = 0 := rfl
@@ -155,7 +155,7 @@ iff.intro int.of_nat.inj (congr_arg _)
 
 protected lemma coe_nat_eq_coe_nat_iff (m n : ℕ) : (↑m : ℤ) = ↑n ↔ m = n :=
 of_nat_eq_of_nat_iff m n
-
+/-* if the negative of successor of $m$ is identified with the negative of successor of $n$, then $m$ equals $n$ *-/
 lemma neg_succ_of_nat_inj_iff {m n : ℕ} : neg_succ_of_nat m = neg_succ_of_nat n ↔ m = n :=
 ⟨neg_succ_of_nat.inj, assume H, by simp [H]⟩
 
@@ -163,17 +163,17 @@ lemma neg_succ_of_nat_eq (n : ℕ) : -[1+ n] = -(n + 1) := rfl
 
 /- neg -/
 
-/- for all integer a, negative of negative a is a itself -/
+/-* for all integer $a$, negative of negative $a$ equals $a$ *-/
 protected lemma neg_neg : ∀ a : ℤ, -(-a) = a
 | (of_nat 0)     := rfl
 | (of_nat (n+1)) := rfl
 | -[1+ n]        := rfl
 
-/- for integers a and b, if negative a equals negative b, then a equals b -/
+/- for integers $a$ and $b$, if $-a$ equals $-b$, then $a$ equals $b$ *-/
 protected lemma neg_inj {a b : ℤ} (h : -a = -b) : a = b :=
 by rw [← int.neg_neg a, ← int.neg_neg b, h]
 
-/- for integers a and b, a-b is the same as a plus negative b  -/
+/-* for integers $a$ and $b$, $a-b$ is the same as $a$ plus $-b$  *-/
 protected lemma sub_eq_add_neg {a b : ℤ} : a - b = a + -b := rfl
 
 /- basic properties of sub_nat_nat -/
@@ -199,7 +199,7 @@ begin
   exact H _ rfl
 end
 
-/- for natural numbers m and n, (m+n) minus m is n  -/
+/-* for natural numbers $m$ and $n$, $(m+n)$ minus $m$ is $n$  *-/
 lemma sub_nat_nat_add_left {m n : ℕ} :
   sub_nat_nat (m + n) m = of_nat n :=
 begin
@@ -210,7 +210,7 @@ begin
   apply nat.le_add_right
 end
 
-/- for natural numbers m and n, m minus (m+n+1) is the negative of the successor of n -/
+/-* for natural numbers $m$ and $n$, $m$ minus $(m+n+1)$ is the negative of the successor of $n$ *-/
 lemma sub_nat_nat_add_right {m n : ℕ} :
   sub_nat_nat m (m + n + 1) = neg_succ_of_nat n :=
 calc sub_nat_nat._match_1 m (m + n + 1) (m + n + 1 - m) =
@@ -218,7 +218,7 @@ calc sub_nat_nat._match_1 m (m + n + 1) (m + n + 1 - m) =
   ... = sub_nat_nat._match_1 m (m + n + 1) (n + 1) : by rw [nat.add_sub_cancel_left]
   ... = neg_succ_of_nat n : rfl
 
-/- for integers m,n,k, (m+k) minus (n+k) equals m minus n -/
+/-* for integers $m$,$n$ and $k$, $(m+k)$ substracts $(n+k)$ equals $m$ minus $n$ *-/
 lemma sub_nat_nat_add_add (m n k : ℕ) : sub_nat_nat (m + k) (n + k) = sub_nat_nat m n :=
 sub_nat_nat_elim m n (λm n i, sub_nat_nat (m + k) (n + k) = i)
   (assume i n, have n + i + k = (n + k) + i, by simp [nat.add_comm, nat.add_left_comm],
@@ -251,14 +251,14 @@ lemma nat_abs_pos_of_ne_zero {a : ℤ} (h : a ≠ 0) : 0 < nat_abs a :=
 lemma nat_abs_zero : nat_abs (0 : int) = (0 : nat) := rfl
 
 lemma nat_abs_one : nat_abs (1 : int) = (1 : nat) := rfl
-
+/-* for any integer $a$, the square of absolute value of $a$ is equal to $a$ square *-/
 lemma nat_abs_mul_self : Π {a : ℤ}, ↑(nat_abs a * nat_abs a) = a * a
 | (of_nat m) := rfl
 | -[1+ m']   := rfl
-
+/-* for any integer $a$, the absolute value iof $a$ and $-a$ are the same *-/
 @[simp] lemma nat_abs_neg (a : ℤ) : nat_abs (-a) = nat_abs a :=
 by {cases a with n n, cases n; refl, refl}
-
+/-* for any integer $a$, $a$ is either equals to its absolute value, or equals to the negative of its absolute value *-/
 lemma nat_abs_eq : Π (a : ℤ), a = nat_abs a ∨ a = -(nat_abs a)
 | (of_nat m) := or.inl rfl
 | -[1+ m']   := or.inr rfl
@@ -272,11 +272,11 @@ def sign : ℤ → ℤ
 | 0       := 0
 | -[1+ n] := -1
 
-/- the sign of 0 is 0 -/
+/-* the sign of 0 is 0 *-/
 @[simp] theorem sign_zero : sign 0 = 0 := rfl
-/- the sign of 1 is 1 -/
+/-* the sign of 1 is 1 *-/
 @[simp] theorem sign_one : sign 1 = 1 := rfl
-/- the sign of -1 is -1 -/
+/-* the sign of -1 is -1 *-/
 @[simp] theorem sign_neg_one : sign (-1) = -1 := rfl
 
 /- Quotient and remainder -/
@@ -339,19 +339,19 @@ def gcd (m n : ℤ) : ℕ := gcd (nat_abs m) (nat_abs n)
 -/
 
 /- addition -/
-/- the addition of integers is commutative -/
+/-* for any integers $a$ and $b$, $a + b = b + a$ *-/
 protected lemma add_comm : ∀ a b : ℤ, a + b = b + a
 | (of_nat n) (of_nat m) := by simp [nat.add_comm]
 | (of_nat n) -[1+ m]    := rfl
 | -[1+ n]    (of_nat m) := rfl
 | -[1+ n]    -[1+m]     := by simp [nat.add_comm]
 
-/-* for all integer a, a plus 0 equals a *-/
+/-* for any integer $a$, $a$ plus 0 equals $a$ *-/
 protected lemma add_zero : ∀ a : ℤ, a + 0 = a
 | (of_nat n) := rfl
 | -[1+ n]   := rfl
 
-/-* for all integer a, 0 plus a equals a *-/
+/-* for any integer $a$, 0 plus $a$ equals $a$ *-/
 protected lemma zero_add (a : ℤ) : 0 + a = a :=
 int.add_comm a 0 ▸ int.add_zero a
 
@@ -397,7 +397,7 @@ lemma add_assoc_aux2 (m n k : ℕ) :
 begin
   simp [add_succ], rw [int.add_comm, sub_nat_nat_add_neg_succ_of_nat], simp [add_succ, succ_add, nat.add_comm]
 end
-
+/-* for all integers $a$, $b$ and $c$, $a + b + c = a + (b + c)$ *-/
 protected lemma add_assoc : ∀ a b c : ℤ, a + b + c = a + (b + c)
 | (of_nat m) (of_nat n) c          := add_assoc_aux1 _ _ _
 | (of_nat m) b          (of_nat k) := by rw [int.add_comm, ← add_assoc_aux1, int.add_comm (of_nat k),
@@ -413,23 +413,23 @@ protected lemma add_assoc : ∀ a b c : ℤ, a + b + c = a + (b + c)
 | -[1+ m]    -[1+ n]    -[1+ k]    := by simp [add_succ, nat.add_comm, nat.add_left_comm, neg_of_nat_of_succ]
 
 /- negation -/
-
+/-* for any natural number $n$, the substraction of $n$ by itself is 0 *-/
 lemma sub_nat_self : ∀ n, sub_nat_nat n n = 0
 | 0        := rfl
 | (succ m) := begin rw [sub_nat_nat_of_sub_eq_zero, nat.sub_self, of_nat_zero], rw nat.sub_self end
 
 local attribute [simp] sub_nat_self
-
+/-* for any integer $a$, $-a$ plus $a$ equals 0 *-/
 protected lemma add_left_neg : ∀ a : ℤ, -a + a = 0
 | (of_nat 0)        := rfl
 | (of_nat (succ m)) := by simp
 | -[1+ m]           := by simp
-
+/- for any integer $a$, $a$ plus $-a$ equals 0 -/
 protected lemma add_right_neg (a : ℤ) : a + -a = 0 :=
 by rw [int.add_comm, int.add_left_neg]
 
 /- multiplication -/
-
+/-* for any integers $a$, $b$, $a * b = b * a$ *-/
 protected lemma mul_comm : ∀ a b : ℤ, a * b = b * a
 | (of_nat m) (of_nat n) := by simp [nat.mul_comm]
 | (of_nat m) -[1+ n]    := by simp [nat.mul_comm]
@@ -456,7 +456,7 @@ begin rw int.mul_comm, simp [neg_succ_of_nat_mul_neg_of_nat, nat.mul_comm] end
 
 local attribute [simp] of_nat_mul_neg_of_nat neg_of_nat_mul_of_nat
   neg_succ_of_nat_mul_neg_of_nat neg_of_nat_mul_neg_succ_of_nat
-
+/-* for any integers $a$, $b$ and $c$, $a * b * c = a * (b * c)$ *-/
 protected lemma mul_assoc : ∀ a b c : ℤ, a * b * c = a * (b * c)
 | (of_nat m) (of_nat n) (of_nat k) := by simp [nat.mul_assoc]
 | (of_nat m) (of_nat n) -[1+ k]    := by simp [nat.mul_assoc]
@@ -466,11 +466,11 @@ protected lemma mul_assoc : ∀ a b c : ℤ, a * b * c = a * (b * c)
 | -[1+ m]    (of_nat n) -[1+ k]    := by simp [nat.mul_assoc]
 | -[1+ m]    -[1+ n]    (of_nat k) := by simp [nat.mul_assoc]
 | -[1+ m]    -[1+ n]   -[1+ k]     := by simp [nat.mul_assoc]
-
+/-* for any integer $a$, $a$ times 0 equals 0 *-/
 protected lemma mul_zero : ∀ (a : ℤ), a * 0 = 0
 | (of_nat m) := rfl
 | -[1+ m]    := rfl
-
+/-* for any integer $a$, 0 times $a$ equals 0 *-/
 protected lemma zero_mul (a : ℤ) : 0 * a = 0 :=
 int.mul_comm a 0 ▸ int.mul_zero a
 
@@ -500,7 +500,7 @@ begin
   have h₂ : of_nat 0 = 0, exact rfl,
   subst h₀, simp [h₂, int.zero_mul, nat.zero_mul]
 end
-
+/-* for natural numbers $m$ and $n$, negative $m$ plus negative $n$ equals negative $(m+n)$  *-/
 lemma neg_of_nat_add (m n : ℕ) :
   neg_of_nat m + neg_of_nat n = neg_of_nat (m + n) :=
 begin
@@ -535,7 +535,7 @@ begin
 end
 
 local attribute [simp] of_nat_mul_sub_nat_nat neg_of_nat_add neg_succ_of_nat_mul_sub_nat_nat
-
+/-* for any integers $a$, $b$ and $c$, $a * (b + c) = a * b + a * c$ *-/
 protected lemma distrib_left : ∀ a b c : ℤ, a * (b + c) = a * b + a * c
 | (of_nat m) (of_nat n) (of_nat k) := by simp [nat.left_distrib]
 | (of_nat m) (of_nat n) -[1+ k]    := begin simp [neg_of_nat_eq_sub_nat_nat_zero],
@@ -552,7 +552,7 @@ protected lemma distrib_left : ∀ a b c : ℤ, a * (b + c) = a * b + a * c
 
 protected lemma distrib_right (a b c : ℤ) : (a + b) * c = a * c + b * c :=
 begin rw [int.mul_comm, int.distrib_left], simp [int.mul_comm] end
-
+/-* 0 is not equal to 1 in integers *-/
 protected lemma zero_ne_one : (0 : int) ≠ 1 :=
 assume h : 0 = 1, succ_ne_zero _ (int.of_nat.inj h).symm
 
@@ -562,14 +562,14 @@ show of_nat (n - m) = of_nat n + neg_of_nat m, from match m, h with
 | succ m, h := show of_nat (n - succ m) = sub_nat_nat n (succ m),
   by delta sub_nat_nat; rw nat.sub_eq_zero_of_le h; refl
 end
-
+/-* for integers $a$, $b$ and $c$, $a+(b+c)=b+(a+c)$ *-/
 protected lemma add_left_comm (a b c : ℤ) : a + (b + c) = b + (a + c) :=
 by rw [← int.add_assoc, int.add_comm a, int.add_assoc]
-
+/-* for integers $a$, $b$ and $c$, if $a+b=a+c$, then $b=c$ *-/
 protected lemma add_left_cancel {a b c : ℤ} (h : a + b = a + c) : b = c :=
 have -a + (a + b) = -a + (a + c), by rw h,
 by rwa [← int.add_assoc, ← int.add_assoc, int.add_left_neg, int.zero_add, int.zero_add] at this
-
+/-* the negative of the sum of $a$ and $b$ equals to the sum of negative $a$ and negative $b$   *-/
 protected lemma neg_add {a b : ℤ} : - (a + b) = -a + -b :=
 calc - (a + b) = -(a + b) + (a + b) + -a + -b :
 begin
@@ -604,19 +604,19 @@ by rw [← int.sub_nat_nat_eq_coe]; exact sub_nat_nat_elim m n
 
 -- Since mod x y is always nonnegative when y ≠ 0, we can make a nat version of it
 def nat_mod (m n : ℤ) : ℕ := (m % n).to_nat
-/- for any integer a, 1 times a is a -/ 
+/-* for any integer $a$, 1 times $a$ is $a$ -/ 
 protected lemma one_mul : ∀ (a : ℤ), (1 : ℤ) * a = a
 | (of_nat n) := show of_nat (1 * n) = of_nat n, by rw nat.one_mul
 | -[1+ n]    := show -[1+ (1 * n)] = -[1+ n], by rw nat.one_mul
-/- for any integer a, a times 1 is a -/
+/-* for any integer $a$, $a$ times 1 is $a$ *-/
 protected lemma mul_one (a : ℤ) : a * 1 = a :=
 by rw [int.mul_comm, int.one_mul]
-/- for any integer a, negative a is equal to -1 times a -/
+/-* for any integer $a$, negative a is equal to -1 times $a$ *-/
 protected lemma neg_eq_neg_one_mul : ∀ a : ℤ, -a = -1 * a
 | (of_nat 0)     := rfl
 | (of_nat (n+1)) := show _ = -[1+ (1*n)+0], by { rw nat.one_mul, refl }
 | -[1+ n]        := show _ = of_nat _, by { rw nat.one_mul, refl }
-/- for any integer a, the product of sign of a and absolute value of a is a -/
+/-* for any integer $a$, the product of sign of $a$ and absolute value of $a$ is $a$ *-/
 theorem sign_mul_nat_abs : ∀ (a : ℤ), sign a * nat_abs a = a
 | (n+1:ℕ) := int.one_mul _
 | 0       := rfl
